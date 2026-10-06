@@ -39,40 +39,29 @@
 	var imgDisparoEnemigo;
 
 
-	var imagenes = ['img/enemigo.png', 'img/nave.png', 'img/disparo.png', 'img/disparo2.png', 'img/space1.png']; 
-	var preloader;
-
-	//Definición de funciones
-	function loadMedia(){
-		preloader = new PreloadJS();
-		preloader.onProgress = progresoCarga;
-		cargar();
-		
-	}
-
-	function cargar(){
-		while(imagenes.length > 0){
-			var imagen = imagenes.shift();
-			preloader.loadFile(imagen);
-		}
-	}
-
-	function progresoCarga(){
-		console.log(parseInt(preloader.progress * 100)+"%");
-		if(preloader.progress == 1){
-			var interval = window.setInterval(frameLoop, 1000/15);
-			fondo = new Image();
-			fondo.src='img/space1.png';
-			imgNave = new Image();
-			imgNave.src='img/nave.png'
-			imgEnemigo = new Image();
-			imgEnemigo.src='img/enemigo.png';
-			imgDisparo = new Image();
-			imgDisparo.src='img/disparo2.png';
-			imgDisparoEnemigo = new Image();
-			imgDisparoEnemigo.src='img/disparo.png';
-		}
-	}
+	function loadMedia() {
+        var paths = ['img/space1.png', 'img/nave.png', 'img/enemigo.png',
+            'img/disparo2.png', 'img/disparo.png'];
+        Promise.all(paths.map(function(path) {
+            return new Promise(function(resolve, reject) {
+                var image = new Image();
+                image.onload = function() { resolve(image); };
+                image.onerror = function() { reject(new Error('No se pudo cargar ' + path)); };
+                image.src = path;
+            });
+        })).then(function(images) {
+            fondo = images[0];
+            imgNave = images[1];
+            imgEnemigo = images[2];
+            imgDisparo = images[3];
+            imgDisparoEnemigo = images[4];
+            window.setInterval(frameLoop, 1000 / 15);
+        }).catch(function(error) {
+            ctx.fillStyle = 'white';
+            ctx.font = '16px sans-serif';
+            ctx.fillText(error.message, 20, 30);
+        });
+    }
 
 	function dibujarEnemigos (){
 		for (var i in enemigos){
@@ -85,6 +74,7 @@
 				ctx.fillStyle='black';
 			}
 			ctx.drawImage(imgEnemigo, enemigo.x, enemigo.y, enemigo.width, enemigo.height);
+            ctx.restore();
 		}
 	}
 
@@ -101,8 +91,9 @@
 	function agregarEventosTeclado(){
 		agregarEvento(document, "keydown", function(e){
 			//Ponemos en true la tecla presionada
+			if ([32, 37, 39].indexOf(e.keyCode) !== -1) e.preventDefault();
 			teclado[e.keyCode]=true;
-			console.log(e.keyCode);
+			
 		});
 
 		agregarEvento(document, "keyup", function(e){
@@ -303,6 +294,7 @@
 			ctx.font = '14pt Arial';
 			ctx.fillText(textoRespuesta.subtitulo, 190, 250);
 		}
+        ctx.restore();
 	}
 
 	function actualizarEstadoJuego(){

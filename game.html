@@ -1,11 +1,20 @@
-<html>
+<!doctype html>
+<html lang="es">
 <head>
-	<title>Juego con HTML 5</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space Invader</title>
+  <style>
+    body { margin: 1rem; background: #111; color: #eee; font-family: sans-serif; }
+    canvas { display: block; max-width: 100%; height: auto; }
+  </style>
 </head>
 <body>
-	<canvas id="game" width="800" height="390"></canvas>
-	<script src="img/main.js"></script>
-	<script src="img/preloadjs-0.1.0.min.js"></script>
+  <h1>Space Invader</h1>
+  <p>Flechas: mover. Espacio: disparar. R: reiniciar tras finalizar.</p>
+  <canvas id="game" width="800" height="390" aria-label="Juego Space Invader">
+    Tu navegador necesita soporte para Canvas para ejecutar este juego.
+  </canvas>
+  <script src="img/main.js"></script>
 </body>
 </html>
